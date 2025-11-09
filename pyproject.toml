@@ -1,7 +1,7 @@
 [project]
-name = "finapp-mvp"
+name = "indibills"
 version = "0.1.0"
-description = "Add your description here"
+description = "A financial management API, tailored for gig workers and contractors"
 readme = "README.md"
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [fastapi, sqlmodel, pydantic]
