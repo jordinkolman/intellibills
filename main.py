@@ -1,28 +1,8 @@
-from datetime import datetime
-from enum import Enum
-from typing import Annotated, Literal, Optional
+from contextlib import asynccontextmanager
+from typing import Annotated
 from fastapi import Depends, FastAPI
-from pydantic import BaseModel
-from sqlmodel import Field, Session, SQLModel, Relationship, create_engine, select, true
-
-
-class AccountType(str, Enum):
-    CHECKING = "checking"
-    SAVINGS = "savings"
-
-class Account(SQLModel, table=True):
-    id: str | None = Field(default=None, primary_key=True)
-    account_name: str = Field(index=True)
-    account_type: AccountType = Field()
-
-
-class Transaction(SQLModel, table=True):
-    id: str | None = Field(default=None, primary_key=True)
-    date: datetime = Field(default=datetime.now(), index=True)
-    amount_dollars: int = Field()
-    amount_cents: int = Field()
-    account_id: int = Field(foreign_key="account.id")
-
+from sqlmodel import Session, SQLModel, create_engine, select
+from models import Transaction
 
 sqlite_file_name = "database.db"
 sqlite_url = f"sqlite:///{sqlite_file_name}"
@@ -39,11 +19,13 @@ def create_db_and_tables():
 
 SessionDep = Annotated[Session, Depends(get_session)]
 
-app = FastAPI()
-
-@app.on_event("startup")
-def on_startup():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     create_db_and_tables()
+    yield
+    engine.dispose()
+
+app = FastAPI(lifespan=lifespan)
 
 @app.get("/")
 async def root():
