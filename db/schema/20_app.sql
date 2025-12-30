@@ -6,22 +6,11 @@ GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA app TO indibills_user;
 ALTER DEFAULT PRIVILEGES IN SCHEMA app
 GRANT ALL PRIVILEGES ON TABLES TO indibills_user;
 
-CREATE TABLE IF NOT EXISTS app.rls_admins (
-  id BIGSERIAL PRIMARY KEY,
-  db_user text NOT NULL
-);
-
-CREATE OR REPLACE TRIGGER audit_admin_changes
-AFTER INSERT OR UPDATE OR DELETE ON app.rls_admins
-FOR EACH ROW
-EXECUTE FUNCTION audit.log_row_change()
-
-INSERT INTO app.rls_admins (db_user) VALUES ('indibills_user');
-
 CREATE TABLE IF NOT EXISTS app.users (
-  id BIGSERIAL PRIMARY KEY,
-  user_name text NOT NULL,
+  id UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+  email text NOT NULL,
   password bytea NOT NULL,
+  first_name text NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 )
@@ -35,7 +24,7 @@ CREATE INDEX idx_users_created_at ON app.users (created_at);
 CREATE INDEX idx_users_updated_at ON app.users (updated_at);
 
 CREATE TABLE IF NOT EXISTS app.institutions (
-  id BIGSERIAL PRIMARY KEY,
+  id UUID bigserial PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
   name text NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()

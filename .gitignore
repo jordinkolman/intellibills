@@ -8,3 +8,7 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Development Docs & Resources
+/dev_docs
+/dev_docs/*
