@@ -5,9 +5,9 @@ CREATE ROLE app_owner NOLOGIN;
 CREATE ROLE app_runtime LOGIN;
 -- password set out of band
 
-CREATE ROLE app_admin LOGIN BYPASSRLS;
+CREATE ROLE app_admin LOGIN;
 
-CREATE ROLE migrator;
+CREATE ROLE migrator LOGIN;
 
 -- read-only access for human audit
 CREATE ROLE auditor LOGIN;
