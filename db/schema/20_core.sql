@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS core."user" (
 );
 
 CREATE INDEX idx_users_created_at ON core."user" (created_at);
-CREATE UNIQUE INDEX idx_user_email ON core."user"(lower(email)) WHERE archived = false;
+CREATE UNIQUE INDEX ux_user_email ON core."user"(lower(email)) WHERE archived = false;
 
 CREATE OR REPLACE TRIGGER audit_user_changes
 AFTER INSERT OR UPDATE OR DELETE ON core."user"
