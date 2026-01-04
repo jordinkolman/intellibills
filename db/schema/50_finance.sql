@@ -50,16 +50,33 @@ AFTER INSERT OR UPDATE OR DELETE ON finance.account
 FOR EACH ROW
 EXECUTE FUNCTION audit.log_row_change();
 
+CREATE TABLE finance.income_category (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL,
+  name TEXT NOT NULL,
+  description TEXT,
+  is_active BOOLEAN NOT NULL DEFAULT true,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  FOREIGN KEY (user_id) REFERENCES core."user"(id) ON DELETE RESTRICT,
+  UNIQUE (user_id, name)
+);
+
+CREATE INDEX idx_income_category_name ON finance.income_category(name);
+CREATE INDEX idx_income_category_user ON finance.income_category(user_id);
+
 CREATE TABLE IF NOT EXISTS finance.transaction (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL,
   account_id UUID NOT NULL,
   plaid_transaction_id TEXT,
+  income_category_id UUID,
   amount NUMERIC(19,4) NOT NULL,
   date DATE NOT NULL,
   name TEXT NOT NULL,
   merchant_name TEXT,
   plaid_metadata JSONB,
+  direction TEXT NOT NULL DEFAULT 'outflow',
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   pending BOOLEAN NOT NULL DEFAULT true,
@@ -67,7 +84,9 @@ CREATE TABLE IF NOT EXISTS finance.transaction (
   currency CHAR(3) NOT NULL,
   FOREIGN KEY (user_id) REFERENCES core."user"(id) ON DELETE RESTRICT,
   FOREIGN KEY (account_id) REFERENCES finance.account(id) ON DELETE RESTRICT,
-  CHECK (source IN ('plaid', 'manual'))
+  FOREIGN KEY (income_category_id) REFERENCES finance.income_category(id) ON DELETE RESTRICT,
+  CHECK (source IN ('plaid', 'manual')),
+  CHECK (direction IN ('inflow', 'outflow'))
 );
 
 CREATE UNIQUE INDEX ux_plaid_transation ON finance.transaction(plaid_transaction_id) WHERE source = 'plaid';
@@ -79,3 +98,43 @@ CREATE OR REPLACE TRIGGER audit_transactions
 AFTER INSERT OR UPDATE OR DELETE ON finance.transaction
 FOR EACH ROW
 EXECUTE FUNCTION audit.log_row_change();
+
+CREATE TABLE IF NOT EXISTS finance.income_stream (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid,
+  user_id UUID NOT NULL,
+  income_category_id UUID NOT NULL,
+  name TEXT NOT NULL,
+  cadence TEXT NOT NULL,
+  expected_amount NUMERIC(19,4) NOT NULL,
+  currency CHAR(3) NOT NULL,
+  next_expected_date DATE NOT NULL,
+  is_active BOOLEAN NOT NULL DEFAULT true,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  FOREIGN KEY (user_id) REFERENCES core."user"(id) ON DELETE RESTRICT,
+  FOREIGN KEY (income_category_id) REFERENCES finance.income_category(id) ON DELETE RESTRICT,
+  CHECK (cadence IN ('weekly', 'biweekly', 'monthly', 'quarterly', 'annual'))
+);
+
+CREATE INDEX idx_income_stream_user ON finance.income_stream(user_id);
+CREATE INDEX idx_income_stream_category ON finance.income_stream(income_category_id);
+CREATE INDEX idx_income_stream_cadence ON finance.income_stream(cadence);
+
+CREATE OR REPLACE TRIGGER audit_income_streams
+AFTER INSERT OR UPDATE OR DELETE ON finance.income_stream
+FOR EACH ROW
+EXECUTE FUNCTION audit.log_row_change();
+
+CREATE TABLE IF NOT EXISTS finance.transaction_income_override (
+  transaction_id UUID PRIMARY KEY,
+  income_category_id UUID NOT NULL,
+  overridden_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  FOREIGN KEY (transaction_id) REFERENCES finance.transaction(id) ON DELETE CASCADE,
+  FOREIGN KEY (income_category_id) REFERENCES finance.income_category(id) ON DELETE RESTRICT
+);
+
+CREATE OR REPLACE TRIGGER audit_transaction_income_overrrides
+AFTER INSERT OR UPDATE OR DELETE ON finance.transaction_income_override
+FOR EACH ROW
+EXECUTE FUNCTION audit.log_row_change();
+
