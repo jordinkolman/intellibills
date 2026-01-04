@@ -29,7 +29,7 @@ CREATE TABLE audit.audit_event(
   client_addr inet NOT NULL,
   source TEXT NOT NULL DEFAULT 'pgaudit',
   FOREIGN KEY (user_id) REFERENCES core."user"(id),
-  FOREIGN KEY (session_id) REFERENCES auth.session(id)
+  FOREIGN KEY (session_id) REFERENCES auth.user_session(id)
 );
 
 CREATE INDEX idx_audit_event_time ON audit.audit_event (event_time);
