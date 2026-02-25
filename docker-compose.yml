@@ -14,7 +14,6 @@ services:
       - pg_data:/var/lib/postgresql/data
       # Bind mounts for initialization scripts
       - ./db/docker_db_files/00_roles.sh:/docker-entrypoint-initdb.d/00_roles.sh:ro
-
       - ./db/docker_db_files/05_create_db.sql:/docker-entrypoint-initdb.d/05_create_db.sql:ro
     restart: unless-stopped
 
