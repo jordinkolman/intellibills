@@ -1,9 +1,12 @@
 services:
   db:
-    image: postgres:alpine3.22
+    build:
+        context: .
+        dockerfile: Dockerfile
     container_name: intellibills_db
     env_file:
       - .env
+    command: ["postgres", "-c", "shared_preload_libraries=pgaudit"]
     ports:
       - "5432:5432"
     volumes:
