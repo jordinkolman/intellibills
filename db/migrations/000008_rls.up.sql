@@ -5,11 +5,11 @@ ALTER TABLE finance.transactions ENABLE ROW LEVEL SECURITY;
 -- Tenant Isolation Policies; Only the authenticated user can access their own records --
 -- DB Admin can still access all records --
 CREATE POLICY tenant_isolation_policy ON app.users
-USING (id = current_setting('app.current_tenant_id', true)::BIGINT;
+USING (id = current_setting('app.current_tenant_id', true)::UUID);
 
 CREATE POLICY tenant_isolation_policy ON app.accounts
-USING (user_id = current_setting('app.current_tenant_id', true)::BIGINT;
+USING (user_id = current_setting('app.current_tenant_id', true)::UUID);
 
 CREATE POLICY tenant_isolation_policy ON app.transactions
-USING (user_id = current_setting('app.current_tenant_id', true)::BIGINT;
+USING (user_id = current_setting('app.current_tenant_id', true)::UUID);
 

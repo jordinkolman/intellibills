@@ -73,7 +73,7 @@ CREATE INDEX idx_budget_categories ON budget.budget_line(category_id);
 CREATE INDEX idx_budget_period_start ON budget.budget_line(period_start);
 CREATE INDEX idx_budget_period_end ON budget.budget_line(period_end);
 CREATE INDEX idx_budget_active ON budget.budget_line(user_id, category_id) 
-WHERE period_start <= CURRENT_DATE AND period_end >= CUREENT_DATE;
+WHERE period_start <= CURRENT_DATE AND period_end >= CURRENT_DATE;
 CREATE UNIQUE INDEX ux_budget_category_period ON budget.budget_line(user_id, category_id, period_start, period_end);
 
 CREATE OR REPLACE FUNCTION budget.enforce_budget_category_user_match()
@@ -94,7 +94,7 @@ END IF;
 IF v_category_user_id <> NEW.user_id THEN
 RAISE EXCEPTION 
 'User % cannot use category % owned by user %', NEW.user_id, NEW.category_id,v_category_user_id
-USING ERRCODE = '23514'
+USING ERRCODE = '23514';
 END IF;
 
 RETURN NEW;
