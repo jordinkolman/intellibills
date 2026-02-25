@@ -1,13 +1,21 @@
 -- schema, table, and trigger owner; cannot login
 CREATE ROLE app_owner NOLOGIN;
 
--- application user; app makes connections through this user
+-- Holder for BYPASSRLS privilege
+CREATE ROLE rls_bypasser NOLOGIN BYPASSRLS;
+
+-- LOGIN ROLES (IDENTITIES)
+
+-- Standard API User
 CREATE ROLE app_runtime LOGIN;
--- password set out of band
 
-CREATE ROLE app_admin LOGIN BYPASSRLS;
+-- Background Workers (Plaid Sync, Mileage Tracking, etc.) 
+-- Require multi-tenant writes asynchronously across multiple tables
+-- So RLS must be bypassed
+CREATE ROLE app_worker LOGIN IN ROLE rls_bypasser;
 
-CREATE ROLE migrator;
+-- Human Database Admin User
+CREATE ROLE app_admin LOGIN IN ROLE rls_bypasser, app_owner;
 
 -- read-only access for human audit
 CREATE ROLE auditor LOGIN;

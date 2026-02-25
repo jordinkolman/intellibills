@@ -12,3 +12,7 @@ wheels/
 # Development Docs & Resources
 /dev_docs
 /dev_docs/*
+
+.env
+.env.*
+!.env.example

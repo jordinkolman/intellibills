@@ -6,7 +6,7 @@ GRANT USAGE ON SCHEMA audit TO app_owner;
 GRANT USAGE ON SCHEMA audit TO auditor;
 
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA audit TO app_owner;
-GRANT SELECT ON TABLES IN SCHEMA audit TO auditor;
+GRANT SELECT ON ALL TABLES IN SCHEMA audit TO auditor;
 
 ALTER DEFAULT PRIVILEGES IN SCHEMA audit
 GRANT ALL PRIVILEGES ON TABLES TO app_owner;
@@ -27,9 +27,7 @@ CREATE TABLE audit.audit_event(
   query TEXT NOT NULL,
   session_id UUID NOT NULL,
   client_addr inet NOT NULL,
-  source TEXT NOT NULL DEFAULT 'pgaudit',
-  FOREIGN KEY (user_id) REFERENCES core."user"(id),
-  FOREIGN KEY (session_id) REFERENCES auth.user_session(id)
+  source TEXT NOT NULL DEFAULT 'pgaudit'
 );
 
 CREATE INDEX idx_audit_event_time ON audit.audit_event (event_time);
@@ -47,8 +45,7 @@ CREATE TABLE audit.audit_row_change(
   user_id UUID,
   row_pk jsonb,
   before_data jsonb,
-  after_data jsonb,
-  FOREIGN KEY (user_id) REFERENCES core."user"(id)
+  after_data jsonb
 );
 
 CREATE INDEX idx_audit_row_change_event_time ON audit.audit_row_change (event_time);
@@ -90,6 +87,6 @@ RETURN OLD;
 END IF;
 RETURN NULL;
 END; $$
-LANGUAGE: PLPGSQL;
+LANGUAGE PLPGSQL;
 
 
