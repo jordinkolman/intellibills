@@ -18,5 +18,13 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" << E
   CREATE ROLE app_worker LOGIN PASSWORD '${APP_WORKER_PASSWORD}';
   CREATE ROLE app_admin LOGIN PASSWORD '${APP_ADMIN_PASSWORD}';
   CREATE ROLE auditor LOGIN PASSWORD '${AUDITOR_PASSWORD}';
+
+  -- Set Permissions
+  ALTER DATABASE intellibills OWNER TO app_owner;
+
+  GRANT CONNECT ON DATABASE intellibills TO app_runtime;
+  GRANT CONNECT ON DATABASE intellibills TO app_admin;
+  GRANT CONNECT ON DATABASE intellibills TO app_worker;
+  GRANT CONNECT ON DATABASE intellibills TO auditor;
 EOSQL
 
