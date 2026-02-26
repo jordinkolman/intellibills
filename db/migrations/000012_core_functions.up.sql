@@ -38,7 +38,11 @@ BEGIN
     DELETE FROM budget.category_mapping WHERE user_id = p_user_id;
     DELETE FROM budget.user_category WHERE user_id = p_user_id;
 
-    --2. Purge Finance Data
+    -- 2. Purge Timekeeping Data
+    DELETE FROM timekeeping.shift WHERE user_id = p_user_id;
+    DELETE FROM timekeeping.shift_transaction WHERE user_id = p_user_id;
+
+    -- 3. Purge Finance Data
     DELETE FROM finance.transaction_income_override
         WHERE transaction_id IN (SELECT id FROM finance.transaction WHERE account_id IN (SELECT id FROM finance.account WHERE user_id = p_user_id));
     DELETE FROM finance.transaction
@@ -47,7 +51,7 @@ BEGIN
     DELETE FROM finance.income_category WHERE user_id = p_user_id;
     DELETE FROM finance.account WHERE user_id = p_user_id;
 
-  -- 3. Purge Plaid Data
+  -- 4. Purge Plaid Data
   -- Clear item dependencies before deleting the items
     DELETE FROM plaid.plaid_webhook_event
         WHERE plaid_item_id IN (SELECT id FROM plaid.plaid_item WHERE user_id = p_user_id);
@@ -60,7 +64,7 @@ BEGIN
     DELETE FROM plaid.plaid_item WHERE user_id = p_user_id;
     DELETE FROM plaid.link_event WHERE user_id = p_user_id;
 
-    -- 4. Purge Auth Data
+    -- 5. Purge Auth Data
   -- Clear password resets before the credential itself
     DELETE FROM auth.password_reset
         WHERE password_credential_id IN (SELECT id FROM auth.password_credential WHERE user_id = p_user_id);
@@ -68,7 +72,7 @@ BEGIN
     DELETE FROM auth.email_verification WHERE user_id = p_user_id;
     DELETE FROM auth.user_session WHERE user_id = p_user_id;
 
-    -- 5. Purge Core Data
+    -- 6. Purge Core Data
     DELETE FROM core.archived_user WHERE user_id = p_user_id;
     DELETE FROM core.user_data WHERE id = p_user_id;
 END; $$

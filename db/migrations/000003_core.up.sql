@@ -1,6 +1,5 @@
-CREATE SCHEMA core;
+CREATE SCHEMA IF NOT EXISTS core AUTHORIZATION app_owner;
 
-GRANT USAGE ON SCHEMA core TO app_owner;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA core TO app_owner;
 
 ALTER DEFAULT PRIVILEGES IN SCHEMA core
@@ -27,7 +26,7 @@ CREATE TABLE IF NOT EXISTS core.user_data (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE INDEX idx_users_created_at ON core.user_data (created_at);
+CREATE INDEX ON core.user_data (created_at);
 CREATE UNIQUE INDEX ux_user_email ON core.user_data (lower(email)) WHERE archived = false;
 
 CREATE OR REPLACE TRIGGER audit_user_changes
