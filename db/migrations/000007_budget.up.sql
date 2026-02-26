@@ -6,6 +6,18 @@ GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA budget TO app_owner;
 ALTER DEFAULT PRIVILEGES IN SCHEMA budget
 GRANT ALL PRIVILEGES ON TABLES TO app_owner;
 
+GRANT USAGE ON SCHEMA budget TO app_runtime;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA budget TO app_runtime;
+
+GRANT USAGE ON SCHEMA budget TO app_worker;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA budget TO app_worker;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA budget
+GRANT ALL PRIVILEGES ON TABLES TO app_runtime;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA budget
+GRANT ALL PRIVILEGES ON TABLES TO app_worker;
+
 CREATE TABLE IF NOT EXISTS budget.user_category (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL,
@@ -14,7 +26,7 @@ CREATE TABLE IF NOT EXISTS budget.user_category (
   is_active BOOLEAN DEFAULT true,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  FOREIGN KEY (user_id) REFERENCES core."user"(id) ON DELETE RESTRICT
+  FOREIGN KEY (user_id) REFERENCES core.user_data(id) ON DELETE RESTRICT
 );
 
 CREATE UNIQUE INDEX ux_user_category_name ON budget.user_category(user_id, name) WHERE is_active = true;
@@ -27,7 +39,7 @@ CREATE TABLE IF NOT EXISTS budget.category_mapping (
   plaid_category TEXT NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  FOREIGN KEY (user_id) REFERENCES core."user"(id) ON DELETE RESTRICT,
+  FOREIGN KEY (user_id) REFERENCES core.user_data(id) ON DELETE RESTRICT,
   FOREIGN KEY (user_category_id) REFERENCES budget.user_category(id) ON DELETE RESTRICT
 );
 
@@ -56,7 +68,7 @@ CREATE TABLE IF NOT EXISTS budget.budget_line (
   rollover BOOLEAN DEFAULT true,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  FOREIGN KEY (user_id) REFERENCES core."user"(id) ON DELETE RESTRICT,
+  FOREIGN KEY (user_id) REFERENCES core.user_data(id) ON DELETE RESTRICT,
   FOREIGN KEY (category_id) REFERENCES budget.user_category(id) ON DELETE RESTRICT,
   CHECK (period_end > period_start),
   CHECK (period_type IN ('weekly', 'biweekly', 'monthly', 'monthly_user_defined')),
@@ -72,13 +84,10 @@ CREATE INDEX idx_budget_period_type ON budget.budget_line(period_type);
 CREATE INDEX idx_budget_categories ON budget.budget_line(category_id);
 CREATE INDEX idx_budget_period_start ON budget.budget_line(period_start);
 CREATE INDEX idx_budget_period_end ON budget.budget_line(period_end);
-CREATE INDEX idx_budget_active ON budget.budget_line(user_id, category_id) 
-WHERE period_start <= CURRENT_DATE AND period_end >= CURRENT_DATE;
 CREATE UNIQUE INDEX ux_budget_category_period ON budget.budget_line(user_id, category_id, period_start, period_end);
 
 CREATE OR REPLACE FUNCTION budget.enforce_budget_category_user_match()
 RETURNS TRIGGER
-SECURITY DEFINER
 SET search_path = budget, public
 AS $$
 DECLARE v_category_user_id UUID;

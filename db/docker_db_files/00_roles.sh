@@ -10,13 +10,10 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" << E
   -- schema, table, and trigger owner; cannot login
   CREATE ROLE app_owner NOLOGIN;
 
-  -- holder for BYPASSRLS privilege
-  CREATE ROLE rls_bypasser NOLOGIN BYPASSRLS;
-
   -- LOGIN ROLES (IDENTITIES)
   CREATE ROLE app_runtime LOGIN PASSWORD '${APP_RUNTIME_PASSWORD}';
-  CREATE ROLE app_worker LOGIN PASSWORD '${APP_WORKER_PASSWORD}';
-  CREATE ROLE app_admin LOGIN PASSWORD '${APP_ADMIN_PASSWORD}';
+  CREATE ROLE app_worker LOGIN PASSWORD '${APP_WORKER_PASSWORD}' BYPASSRLS;
+  CREATE ROLE app_admin LOGIN PASSWORD '${APP_ADMIN_PASSWORD}' BYPASSRLS IN ROLE app_owner;
   CREATE ROLE auditor LOGIN PASSWORD '${AUDITOR_PASSWORD}';
 
   -- Set Permissions

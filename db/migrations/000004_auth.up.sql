@@ -6,6 +6,18 @@ GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA auth TO app_owner;
 ALTER DEFAULT PRIVILEGES IN SCHEMA auth
 GRANT ALL PRIVILEGES ON TABLES TO app_owner;
 
+GRANT USAGE ON SCHEMA auth TO app_runtime;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA auth TO app_runtime;
+
+GRANT USAGE ON SCHEMA auth TO app_worker;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA auth TO app_worker;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA auth
+GRANT ALL PRIVILEGES ON TABLES TO app_runtime;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA auth
+GRANT ALL PRIVILEGES ON TABLES TO app_worker;
+
 CREATE TABLE IF NOT EXISTS auth.hash_algo (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL UNIQUE
@@ -21,7 +33,7 @@ CREATE TABLE IF NOT EXISTS auth.user_session (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   revoked_at TIMESTAMPTZ,
-  FOREIGN KEY (user_id) REFERENCES core."user"(id) ON DELETE RESTRICT,
+  FOREIGN KEY (user_id) REFERENCES core.user_data(id) ON DELETE RESTRICT,
   FOREIGN KEY (hash_algo_id) REFERENCES auth.hash_algo(id) ON DELETE RESTRICT,
   CHECK (revoked_at IS NULL OR revoked_at >= created_at)
 );
@@ -45,7 +57,7 @@ CREATE TABLE IF NOT EXISTS auth.email_verification (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   expires_at TIMESTAMPTZ NOT NULL,
-  FOREIGN KEY (user_id) REFERENCES core."user"(id) ON DELETE RESTRICT,
+  FOREIGN KEY (user_id) REFERENCES core.user_data(id) ON DELETE RESTRICT,
   FOREIGN KEY (hash_algo_id) REFERENCES auth.hash_algo(id) ON DELETE RESTRICT,
   CHECK (is_verified = false OR expires_at > created_at)
 );
@@ -57,7 +69,6 @@ EXECUTE FUNCTION audit.log_row_change();
 
 CREATE FUNCTION auth.deactivate_previous_email_verification()
 RETURNS TRIGGER
-SECURITY DEFINER
 SET search_path = auth, public
 AS $$
 BEGIN
@@ -91,7 +102,7 @@ CREATE TABLE IF NOT EXISTS auth.password_credential (
   hash_algo_id UUID NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   last_rotated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  FOREIGN KEY (user_id) REFERENCES core."user"(id) ON DELETE RESTRICT,
+  FOREIGN KEY (user_id) REFERENCES core.user_data(id) ON DELETE RESTRICT,
   FOREIGN KEY (hash_algo_id) REFERENCES auth.hash_algo(id)
 );
 

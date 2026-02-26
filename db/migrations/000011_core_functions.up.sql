@@ -1,7 +1,6 @@
 -- Schema Functions --
 CREATE OR REPLACE FUNCTION core.archive_user(p_user_id uuid)
 RETURNS void
-SECURITY DEFINER
 SET search_path = core, public
 AS $$
 BEGIN
@@ -15,7 +14,6 @@ LANGUAGE PLPGSQL;
 
 CREATE OR REPLACE FUNCTION core.restore_user(p_user_id uuid)
 RETURNS void
-SECURITY DEFINER
 SET search_path = core, public
 AS $$
 BEGIN
@@ -30,12 +28,13 @@ LANGUAGE PLPGSQL;
 
 CREATE OR REPLACE FUNCTION core.purge_user(p_user_id uuid)
 RETURNS void
-SECURITY DEFINER
 SET search_path = core, public
 AS $$
 BEGIN
     -- 1. Purge Budget Data
     DELETE FROM budget.budget_line WHERE user_id = p_user_id;
+    DELETE FROM budget.transaction_category_override
+        WHERE user_category_id IN (SELECT id FROM budget.user_category WHERE user_id = p_user_id);
     DELETE FROM budget.category_mapping WHERE user_id = p_user_id;
     DELETE FROM budget.user_category WHERE user_id = p_user_id;
 
@@ -77,7 +76,6 @@ LANGUAGE PLPGSQL;
 
 CREATE OR REPLACE FUNCTION core.purge_stale_users()
 RETURNS integer
-SECURITY DEFINER
 SET search_path = core, public
 AS $$
 DECLARE
@@ -87,7 +85,7 @@ BEGIN
     FOR v_user_record IN
         SELECT user_id
         FROM core.archived_user
-        WHERE archived_at < NOW() - INTERVAL '30 days'
+        WHERE expires_at <= NOW()
     LOOP
         PERFORM core.purge_user(v_user_record.user_id);
         v_purge_count := v_purge_count + 1;

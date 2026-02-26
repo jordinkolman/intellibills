@@ -6,6 +6,18 @@ GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA finance TO app_owner;
 ALTER DEFAULT PRIVILEGES IN SCHEMA finance
 GRANT ALL PRIVILEGES ON TABLES TO app_owner;
 
+GRANT USAGE ON SCHEMA finance TO app_runtime;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA finance TO app_runtime;
+
+GRANT USAGE ON SCHEMA finance TO app_worker;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA finance TO app_worker;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA finance
+GRANT ALL PRIVILEGES ON TABLES TO app_runtime;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA finance
+GRANT ALL PRIVILEGES ON TABLES TO app_worker;
+
 CREATE TABLE IF NOT EXISTS finance.account_type (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL UNIQUE,
@@ -39,7 +51,7 @@ CREATE TABLE IF NOT EXISTS finance.account (
   account_name TEXT NOT NULL,
   account_subtype_id UUID NOT NULL,
   archived BOOLEAN NOT NULL DEFAULT false,
-  FOREIGN KEY (user_id) REFERENCES core."user"(id) ON DELETE RESTRICT,
+  FOREIGN KEY (user_id) REFERENCES core.user_data(id) ON DELETE RESTRICT,
   FOREIGN KEY (institution_id) REFERENCES plaid.plaid_institution(id) ON DELETE RESTRICT,
   FOREIGN KEY (plaid_account_id) REFERENCES plaid.plaid_account(id) ON DELETE RESTRICT,
   FOREIGN KEY (account_subtype_id) REFERENCES finance.account_subtype(id) ON DELETE RESTRICT
@@ -58,7 +70,7 @@ CREATE TABLE finance.income_category (
   is_active BOOLEAN NOT NULL DEFAULT true,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  FOREIGN KEY (user_id) REFERENCES core."user"(id) ON DELETE RESTRICT,
+  FOREIGN KEY (user_id) REFERENCES core.user_data(id) ON DELETE RESTRICT,
   UNIQUE (user_id, name)
 );
 
@@ -82,7 +94,7 @@ CREATE TABLE IF NOT EXISTS finance.transaction (
   pending BOOLEAN NOT NULL DEFAULT true,
   source TEXT NOT NULL,
   currency CHAR(3) NOT NULL,
-  FOREIGN KEY (user_id) REFERENCES core."user"(id) ON DELETE RESTRICT,
+  FOREIGN KEY (user_id) REFERENCES core.user_data(id) ON DELETE RESTRICT,
   FOREIGN KEY (account_id) REFERENCES finance.account(id) ON DELETE RESTRICT,
   FOREIGN KEY (income_category_id) REFERENCES finance.income_category(id) ON DELETE RESTRICT,
   CHECK (source IN ('plaid', 'manual')),
@@ -100,7 +112,7 @@ FOR EACH ROW
 EXECUTE FUNCTION audit.log_row_change();
 
 CREATE TABLE IF NOT EXISTS finance.income_stream (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL,
   income_category_id UUID NOT NULL,
   name TEXT NOT NULL,
@@ -111,7 +123,7 @@ CREATE TABLE IF NOT EXISTS finance.income_stream (
   is_active BOOLEAN NOT NULL DEFAULT true,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  FOREIGN KEY (user_id) REFERENCES core."user"(id) ON DELETE RESTRICT,
+  FOREIGN KEY (user_id) REFERENCES core.user_data(id) ON DELETE RESTRICT,
   FOREIGN KEY (income_category_id) REFERENCES finance.income_category(id) ON DELETE RESTRICT,
   CHECK (cadence IN ('weekly', 'biweekly', 'monthly', 'quarterly', 'annual'))
 );
