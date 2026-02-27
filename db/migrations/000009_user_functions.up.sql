@@ -78,10 +78,6 @@ BEGIN
     -- 6. Purge Core Data
     DELETE FROM core.archived_user WHERE user_id = p_user_id;
     DELETE FROM core.user_data WHERE id = p_user_id;
-
-    -- 7. Purge Audit Data
-    DELETE FROM audit.audit_event WHERE user_id = p_user_id;
-    DELETE FROM audit.audit_row_change WHERE user_id = p_user_id;
 END; $$
 LANGUAGE PLPGSQL;
 
