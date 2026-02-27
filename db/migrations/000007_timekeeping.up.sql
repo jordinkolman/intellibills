@@ -1,3 +1,5 @@
+SET ROLE app_owner;
+
 CREATE SCHEMA IF NOT EXISTS timekeeping AUTHORIZATION app_owner;
 
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA timekeeping TO app_owner;

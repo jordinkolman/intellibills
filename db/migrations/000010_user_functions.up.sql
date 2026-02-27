@@ -1,3 +1,5 @@
+SET ROLE app_owner;
+
 -- Schema Functions --
 CREATE OR REPLACE FUNCTION core.archive_user(p_user_id uuid)
 RETURNS void

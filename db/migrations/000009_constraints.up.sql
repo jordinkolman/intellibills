@@ -1,3 +1,5 @@
+SET ROLE app_owner;
+
 -- Apply audit_event foreign keys
 ALTER TABLE audit.audit_event
   ADD CONSTRAINT fk_audit_event_user
