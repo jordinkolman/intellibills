@@ -17,9 +17,7 @@
     <file url="file://$PROJECT_DIR$/db/migrations/000007_timekeeping.up.sql" value="5efedc0f-8de0-403c-a0a6-2d7044bad494" />
     <file url="file://$PROJECT_DIR$/db/migrations/000008_rls.down.sql" value="5efedc0f-8de0-403c-a0a6-2d7044bad494" />
     <file url="file://$PROJECT_DIR$/db/migrations/000008_rls.up.sql" value="5efedc0f-8de0-403c-a0a6-2d7044bad494" />
-    <file url="file://$PROJECT_DIR$/db/migrations/000009_constraints.down.sql" value="5efedc0f-8de0-403c-a0a6-2d7044bad494" />
-    <file url="file://$PROJECT_DIR$/db/migrations/000009_constraints.up.sql" value="5efedc0f-8de0-403c-a0a6-2d7044bad494" />
-    <file url="file://$PROJECT_DIR$/db/migrations/000010_user_functions.down.sql" value="5efedc0f-8de0-403c-a0a6-2d7044bad494" />
-    <file url="file://$PROJECT_DIR$/db/migrations/000010_user_functions.up.sql" value="5efedc0f-8de0-403c-a0a6-2d7044bad494" />
+    <file url="file://$PROJECT_DIR$/db/migrations/000009_user_functions.down.sql" value="5efedc0f-8de0-403c-a0a6-2d7044bad494" />
+    <file url="file://$PROJECT_DIR$/db/migrations/000009_user_functions.up.sql" value="5efedc0f-8de0-403c-a0a6-2d7044bad494" />
   </component>
 </project>

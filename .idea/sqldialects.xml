@@ -17,10 +17,8 @@
     <file url="file://$PROJECT_DIR$/db/migrations/000007_timekeeping.up.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/db/migrations/000008_rls.down.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/db/migrations/000008_rls.up.sql" dialect="PostgreSQL" />
-    <file url="file://$PROJECT_DIR$/db/migrations/000009_constraints.down.sql" dialect="PostgreSQL" />
-    <file url="file://$PROJECT_DIR$/db/migrations/000009_constraints.up.sql" dialect="PostgreSQL" />
-    <file url="file://$PROJECT_DIR$/db/migrations/000010_user_functions.down.sql" dialect="PostgreSQL" />
-    <file url="file://$PROJECT_DIR$/db/migrations/000010_user_functions.up.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/db/migrations/000009_user_functions.down.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/db/migrations/000009_user_functions.up.sql" dialect="PostgreSQL" />
     <file url="PROJECT" dialect="PostgreSQL" />
   </component>
 </project>
