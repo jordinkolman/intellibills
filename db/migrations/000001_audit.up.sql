@@ -62,12 +62,24 @@ AS $$
 DECLARE 
   v_tenant_id uuid; 
   v_request_id uuid;
+  v_tenant_raw text;
+  v_request_raw text;
 BEGIN
 IF TG_TABLE_SCHEMA = 'audit' THEN
   RETURN NULL;
 END IF;
-v_tenant_id := NULLIF(current_setting('app.context.current_tenant_id', true), '')::uuid;
-v_request_id := NULLIF(current_setting('app.context.request_id', true), '')::uuid;
+v_tenant_raw := NULLIF(current_setting('app.context.current_tenant_id', true), '');
+v_request_raw := NULLIF(current_setting('app.context.request_id', true), '');
+v_tenant_id := CASE
+  WHEN v_tenant_raw ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+  THEN v_tenant_raw::uuid
+  ELSE NULL
+END;
+v_request_id := CASE
+  WHEN v_request_raw ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+  THEN v_request_raw::uuid
+  ELSE NULL
+END;
 IF TG_OP = 'INSERT' THEN
 INSERT INTO audit.audit_row_change
 (table_name, request_id, operation, db_role, user_id, row_pk, after_data) 
