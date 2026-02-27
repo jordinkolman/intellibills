@@ -30,6 +30,11 @@ CREATE TABLE IF NOT EXISTS timekeeping.shift (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+CREATE OR REPLACE TRIGGER audit_shifts
+AFTER INSERT OR UPDATE OR DELETE ON timekeeping.shift
+FOR EACH ROW
+EXECUTE FUNCTION audit.log_row_change();
+
 CREATE TABLE IF NOT EXISTS timekeeping.shift_transaction (
     shift_id UUID NOT NULL REFERENCES timekeeping.shift(id) ON DELETE RESTRICT,
     transaction_id UUID NOT NULL REFERENCES finance.transaction(id) ON DELETE RESTRICT,
@@ -40,3 +45,7 @@ CREATE TABLE IF NOT EXISTS timekeeping.shift_transaction (
     PRIMARY KEY (shift_id, transaction_id)
 );
 
+CREATE OR REPLACE TRIGGER audit_shift_transactions
+AFTER INSERT OR UPDATE OR DELETE ON timekeeping.shift_transaction
+FOR EACH ROW
+EXECUTE FUNCTION audit.log_row_change();

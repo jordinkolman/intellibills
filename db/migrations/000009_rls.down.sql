@@ -15,6 +15,7 @@ DROP POLICY IF EXISTS tenant_isolation_policy ON plaid.plaid_sync_job;
 DROP POLICY IF EXISTS tenant_isolation_policy ON plaid.plaid_account;
 DROP POLICY IF EXISTS tenant_isolation_policy ON plaid.plaid_item;
 DROP POLICY IF EXISTS tenant_isolation_policy ON plaid.link_event;
+DROP POLICY IF EXISTS tenant_isolation_policy ON auth.password_reset;
 DROP POLICY IF EXISTS tenant_isolation_policy ON auth.password_credential;
 DROP POLICY IF EXISTS tenant_isolation_policy ON auth.email_verification;
 DROP POLICY IF EXISTS tenant_isolation_policy ON auth.user_session;

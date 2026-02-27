@@ -8,6 +8,8 @@ GRANT ALL PRIVILEGES ON TABLES TO app_owner;
 GRANT USAGE ON SCHEMA plaid TO app_runtime;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA plaid TO app_runtime;
 
+REVOKE INSERT, UPDATE, DELETE ON plaid.plaid_institution FROM app_runtime;
+
 GRANT USAGE ON SCHEMA plaid TO app_worker;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA plaid TO app_worker;
 

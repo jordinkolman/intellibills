@@ -8,6 +8,9 @@ GRANT ALL PRIVILEGES ON TABLES TO app_owner;
 GRANT USAGE ON SCHEMA finance TO app_runtime;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA finance TO app_runtime;
 
+REVOKE INSERT, UPDATE, DELETE ON finance.account_type FROM app_runtime;
+REVOKE INSERT, UPDATE, DELETE ON finance.account_subtype FROM app_runtime;
+
 GRANT USAGE ON SCHEMA finance TO app_worker;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA finance TO app_worker;
 
