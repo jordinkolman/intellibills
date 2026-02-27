@@ -64,9 +64,17 @@ BEGIN
   FROM timekeeping.shift
   WHERE id = NEW.shift_id;
 
+  IF v_shift_user IS NULL THEN
+    RAISE EXCEPTION 'Shift % does not exist', NEW.shift_id USING ERRCODE = '23503';
+  END IF;
+
   SELECT user_id INTO v_transaction_user
   FROM finance.transaction
   WHERE id = NEW.transaction_id;
+
+  IF v_transaction_user IS NULL THEN
+    RAISE EXCEPTION 'Transaction % does not exist', NEW.transaction_id USING ERRCODE = '23503';
+  END IF;
 
   IF NEW.user_id <> v_shift_user OR NEW.user_id <> v_transaction_user THEN
     RAISE EXCEPTION 'shift_transaction user mismatch' USING ERRCODE = '23514';
