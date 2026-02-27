@@ -29,7 +29,13 @@ CREATE TABLE IF NOT EXISTS timekeeping.shift (
     actual_end_time TIMESTAMPTZ,
     status VARCHAR(20) NOT NULL DEFAULT 'planned' CHECK (status IN ('planned', 'active', 'completed', 'cancelled')),
     created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW()
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    CHECK (planned_end_time > planned_start_time),
+    CHECK (
+      actual_start_time IS NULL
+      OR actual_end_time IS NULL
+      OR actual_end_time >= actual_start_time
+    )
 );
 
 CREATE OR REPLACE TRIGGER audit_shifts
