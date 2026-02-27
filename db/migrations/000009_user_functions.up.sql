@@ -101,3 +101,8 @@ BEGIN
     RETURN v_purge_count;
 END; $$
 LANGUAGE PLPGSQL;
+
+REVOKE ALL ON FUNCTION core.archive_user(uuid) FROM PUBLIC;
+REVOKE ALL ON FUNCTION core.restore_user(uuid) FROM PUBLIC;
+REVOKE ALL ON FUNCTION core.purge_user(uuid) FROM PUBLIC;
+REVOKE ALL ON FUNCTION core.purge_stale_users() FROM PUBLIC;
