@@ -10,8 +10,6 @@ GRANT ALL PRIVILEGES ON TABLES TO app_owner;
 GRANT USAGE ON SCHEMA auth TO app_runtime;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA auth TO app_runtime;
 
-REVOKE INSERT, UPDATE, DELETE ON auth.hash_algo FROM app_runtime;
-
 GRANT USAGE ON SCHEMA auth TO app_worker;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA auth TO app_worker;
 
@@ -25,6 +23,8 @@ CREATE TABLE IF NOT EXISTS auth.hash_algo (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL UNIQUE
 );
+
+REVOKE INSERT, UPDATE, DELETE ON auth.hash_algo FROM app_runtime;
 
 CREATE TABLE IF NOT EXISTS auth.user_session (
   id UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),

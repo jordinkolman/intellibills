@@ -10,9 +10,6 @@ GRANT ALL PRIVILEGES ON TABLES TO app_owner;
 GRANT USAGE ON SCHEMA finance TO app_runtime;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA finance TO app_runtime;
 
-REVOKE INSERT, UPDATE, DELETE ON finance.account_type FROM app_runtime;
-REVOKE INSERT, UPDATE, DELETE ON finance.account_subtype FROM app_runtime;
-
 GRANT USAGE ON SCHEMA finance TO app_worker;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA finance TO app_worker;
 
@@ -29,6 +26,8 @@ CREATE TABLE IF NOT EXISTS finance.account_type (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+REVOKE INSERT, UPDATE, DELETE ON finance.account_type FROM app_runtime;
+
 CREATE TABLE IF NOT EXISTS finance.account_subtype (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   type_id UUID NOT NULL,
@@ -37,6 +36,8 @@ CREATE TABLE IF NOT EXISTS finance.account_subtype (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   FOREIGN KEY(type_id) REFERENCES finance.account_type(id) ON DELETE CASCADE
 );
+
+REVOKE INSERT, UPDATE, DELETE ON finance.account_subtype FROM app_runtime;
 
 CREATE INDEX idx_subtype_type ON finance.account_subtype(type_id);
 CREATE UNIQUE INDEX ux_subtype_type_name ON finance.account_subtype (type_id, name);

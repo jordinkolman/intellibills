@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS auth.password_reset;
 
 DROP TABLE IF EXISTS auth.password_credential;
 
-DROP FUNCTION IF EXISTS auth.deactivate_previous_email_verification();
+DROP FUNCTION IF EXISTS auth.deactivate_previous_email_verification() CASCADE;
 
 DROP TABLE IF EXISTS auth.email_verification;
 

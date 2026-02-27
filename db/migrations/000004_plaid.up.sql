@@ -10,8 +10,6 @@ GRANT ALL PRIVILEGES ON TABLES TO app_owner;
 GRANT USAGE ON SCHEMA plaid TO app_runtime;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA plaid TO app_runtime;
 
-REVOKE INSERT, UPDATE, DELETE ON plaid.plaid_institution FROM app_runtime;
-
 GRANT USAGE ON SCHEMA plaid TO app_worker;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA plaid TO app_worker;
 
@@ -30,6 +28,8 @@ CREATE TABLE IF NOT EXISTS plaid.plaid_institution (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+REVOKE INSERT, UPDATE, DELETE ON plaid.plaid_institution FROM app_runtime;
 
 CREATE TABLE IF NOT EXISTS plaid.link_event(
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
