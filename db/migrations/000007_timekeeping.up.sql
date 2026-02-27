@@ -38,13 +38,14 @@ FOR EACH ROW
 EXECUTE FUNCTION audit.log_row_change();
 
 CREATE TABLE IF NOT EXISTS timekeeping.shift_transaction (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     shift_id UUID NOT NULL REFERENCES timekeeping.shift(id) ON DELETE RESTRICT,
     transaction_id UUID NOT NULL REFERENCES finance.transaction(id) ON DELETE RESTRICT,
     user_id UUID NOT NULL REFERENCES core.user_data(id) ON DELETE RESTRICT,
     amount DECIMAL(12, 2) NOT NULL,
     type VARCHAR(20) NOT NULL CHECK (type IN ('income', 'expense')),
     created_at TIMESTAMPTZ DEFAULT NOW(),
-    PRIMARY KEY (shift_id, transaction_id)
+    UNIQUE (shift_id, transaction_id)
 );
 
 CREATE OR REPLACE TRIGGER audit_shift_transactions
