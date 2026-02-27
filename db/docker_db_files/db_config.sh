@@ -23,5 +23,10 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" << E
   GRANT CONNECT ON DATABASE intellibills TO app_admin;
   GRANT CONNECT ON DATABASE intellibills TO app_worker;
   GRANT CONNECT ON DATABASE intellibills TO auditor;
+
+  CREATE EXTENSION IF NOT EXISTS pgaudit;
+  CREATE EXTENSION IF NOT EXISTS pgcrypto;
+  CREATE EXTENSION IF NOT EXISTS btree_gist;
+
 EOSQL
 
