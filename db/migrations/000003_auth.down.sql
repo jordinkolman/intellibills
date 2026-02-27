@@ -1,3 +1,5 @@
+SET ROLE app_owner;
+
 DROP TABLE IF EXISTS auth.password_reset;
 
 DROP TABLE IF EXISTS auth.password_credential;

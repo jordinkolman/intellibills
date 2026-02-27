@@ -1,3 +1,5 @@
+SET ROLE app_owner;
+
 DROP TABLE IF EXISTS plaid.plaid_account;
 
 DROP TABLE IF EXISTS plaid.plaid_webhook_event;

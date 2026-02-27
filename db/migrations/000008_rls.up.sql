@@ -29,7 +29,7 @@ CREATE OR REPLACE FUNCTION core.current_tenant()
 RETURNS uuid
 LANGUAGE sql STABLE
 AS $$
-   SELECT NULLIF(current_setting('app.context.current_tenant_id', true), ' ')::UUID;
+   SELECT NULLIF(current_setting('app.context.current_tenant_id', true), '')::UUID;
 $$;
 
 -- Tenant Isolation Policies; Only the authenticated user can access their own records --

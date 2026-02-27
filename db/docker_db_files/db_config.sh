@@ -17,12 +17,12 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" << E
   CREATE ROLE auditor LOGIN PASSWORD '${AUDITOR_PASSWORD}';
 
   -- Set Permissions
-  ALTER DATABASE intellibills OWNER TO app_owner;
+  ALTER DATABASE ${POSTGRES_DB} OWNER TO app_owner;
 
-  GRANT CONNECT ON DATABASE intellibills TO app_runtime;
-  GRANT CONNECT ON DATABASE intellibills TO app_admin;
-  GRANT CONNECT ON DATABASE intellibills TO app_worker;
-  GRANT CONNECT ON DATABASE intellibills TO auditor;
+  GRANT CONNECT ON DATABASE ${POSTGRES_DB} TO app_runtime;
+  GRANT CONNECT ON DATABASE ${POSTGRES_DB} TO app_admin;
+  GRANT CONNECT ON DATABASE ${POSTGRES_DB} TO app_worker;
+  GRANT CONNECT ON DATABASE ${POSTGRES_DB} TO auditor;
 
   CREATE EXTENSION IF NOT EXISTS pgaudit;
   CREATE EXTENSION IF NOT EXISTS pgcrypto;

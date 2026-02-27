@@ -66,8 +66,8 @@ BEGIN
 IF TG_TABLE_SCHEMA = 'audit' THEN
   RETURN NULL;
 END IF;
-v_tenant_id := NULLIF(current_setting('app.context.current_tenant_id', true), ' ')::uuid;
-v_request_id := NULLIF(current_setting('app.context.request_id', true), ' ')::uuid;
+v_tenant_id := NULLIF(current_setting('app.context.current_tenant_id', true), '')::uuid;
+v_request_id := NULLIF(current_setting('app.context.request_id', true), '')::uuid;
 IF TG_OP = 'INSERT' THEN
 INSERT INTO audit.audit_row_change
 (table_name, request_id, operation, db_role, user_id, row_pk, after_data) 

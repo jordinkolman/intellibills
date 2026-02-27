@@ -1,3 +1,5 @@
+SET ROLE app_owner;
+
 DROP TABLE IF EXISTS finance.transaction_income_override;
 
 DROP TABLE IF EXISTS finance.income_stream;

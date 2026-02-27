@@ -1,3 +1,5 @@
+SET ROLE app_owner;
+
 DROP FUNCTION IF EXISTS budget.enforce_budget_category_user_match() CASCADE;
 
 DROP TABLE IF EXISTS budget.budget_line;

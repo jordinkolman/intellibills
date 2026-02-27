@@ -1,3 +1,5 @@
+SET ROLE app_owner;
+
 DROP FUNCTION IF EXISTS audit.log_row_change();
 
 DROP TABLE IF EXISTS audit.audit_row_change;

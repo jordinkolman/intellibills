@@ -1,3 +1,5 @@
+SET ROLE app_owner;
+
 DROP POLICY IF EXISTS tenant_isolation_policy ON timekeeping.shift_transaction;
 DROP POLICY IF EXISTS tenant_isolation_policy ON timekeeping.shift;
 DROP POLICY IF EXISTS tenant_isolation_policy ON budget.budget_line;
@@ -21,3 +23,4 @@ DROP POLICY IF EXISTS tenant_isolation_policy ON auth.email_verification;
 DROP POLICY IF EXISTS tenant_isolation_policy ON auth.user_session;
 DROP POLICY IF EXISTS tenant_isolation_policy ON core.archived_user;
 DROP POLICY IF EXISTS tenant_isolation_policy ON core.user_data;
+DROP FUNCTION IF EXISTS core.current_tenant();
