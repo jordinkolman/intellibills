@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourcePerFileMappings">
+    <file url="file://$PROJECT_DIR$/db/migrations/000001_audit.down.sql" value="5efedc0f-8de0-403c-a0a6-2d7044bad494" />
+    <file url="file://$PROJECT_DIR$/db/migrations/000001_audit.up.sql" value="5efedc0f-8de0-403c-a0a6-2d7044bad494" />
+    <file url="file://$PROJECT_DIR$/db/migrations/000002_core.down.sql" value="5efedc0f-8de0-403c-a0a6-2d7044bad494" />
+    <file url="file://$PROJECT_DIR$/db/migrations/000002_core.up.sql" value="5efedc0f-8de0-403c-a0a6-2d7044bad494" />
+    <file url="file://$PROJECT_DIR$/db/migrations/000003_auth.down.sql" value="5efedc0f-8de0-403c-a0a6-2d7044bad494" />
+    <file url="file://$PROJECT_DIR$/db/migrations/000003_auth.up.sql" value="5efedc0f-8de0-403c-a0a6-2d7044bad494" />
+    <file url="file://$PROJECT_DIR$/db/migrations/000004_plaid.down.sql" value="5efedc0f-8de0-403c-a0a6-2d7044bad494" />
+    <file url="file://$PROJECT_DIR$/db/migrations/000004_plaid.up.sql" value="5efedc0f-8de0-403c-a0a6-2d7044bad494" />
+    <file url="file://$PROJECT_DIR$/db/migrations/000005_finance.down.sql" value="5efedc0f-8de0-403c-a0a6-2d7044bad494" />
+    <file url="file://$PROJECT_DIR$/db/migrations/000005_finance.up.sql" value="5efedc0f-8de0-403c-a0a6-2d7044bad494" />
+    <file url="file://$PROJECT_DIR$/db/migrations/000006_budget.down.sql" value="5efedc0f-8de0-403c-a0a6-2d7044bad494" />
+    <file url="file://$PROJECT_DIR$/db/migrations/000006_budget.up.sql" value="5efedc0f-8de0-403c-a0a6-2d7044bad494" />
+    <file url="file://$PROJECT_DIR$/db/migrations/000007_timekeeping.down.sql" value="5efedc0f-8de0-403c-a0a6-2d7044bad494" />
+    <file url="file://$PROJECT_DIR$/db/migrations/000007_timekeeping.up.sql" value="5efedc0f-8de0-403c-a0a6-2d7044bad494" />
+    <file url="file://$PROJECT_DIR$/db/migrations/000008_rls.down.sql" value="5efedc0f-8de0-403c-a0a6-2d7044bad494" />
+    <file url="file://$PROJECT_DIR$/db/migrations/000008_rls.up.sql" value="5efedc0f-8de0-403c-a0a6-2d7044bad494" />
+    <file url="file://$PROJECT_DIR$/db/migrations/000009_user_functions.down.sql" value="5efedc0f-8de0-403c-a0a6-2d7044bad494" />
+    <file url="file://$PROJECT_DIR$/db/migrations/000009_user_functions.up.sql" value="5efedc0f-8de0-403c-a0a6-2d7044bad494" />
+  </component>
+</project>

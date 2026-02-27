@@ -1,4 +1,6 @@
-CREATE SCHEMA audit AUTHORIZATION app_owner;
+SET ROLE app_owner;
+
+CREATE SCHEMA IF NOT EXISTS audit AUTHORIZATION app_owner;
 
 REVOKE ALL ON SCHEMA audit FROM PUBLIC;
 
@@ -6,7 +8,7 @@ GRANT USAGE ON SCHEMA audit TO app_owner;
 GRANT USAGE ON SCHEMA audit TO auditor;
 
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA audit TO app_owner;
-GRANT SELECT ON TABLES IN SCHEMA audit TO auditor;
+GRANT SELECT ON ALL TABLES IN SCHEMA audit TO auditor;
 
 ALTER DEFAULT PRIVILEGES IN SCHEMA audit
 GRANT ALL PRIVILEGES ON TABLES TO app_owner;
@@ -27,9 +29,7 @@ CREATE TABLE audit.audit_event(
   query TEXT NOT NULL,
   session_id UUID NOT NULL,
   client_addr inet NOT NULL,
-  source TEXT NOT NULL DEFAULT 'pgaudit',
-  FOREIGN KEY (user_id) REFERENCES core."user"(id),
-  FOREIGN KEY (session_id) REFERENCES auth.user_session(id)
+  source TEXT NOT NULL DEFAULT 'pgaudit'
 );
 
 CREATE INDEX idx_audit_event_time ON audit.audit_event (event_time);
@@ -47,8 +47,7 @@ CREATE TABLE audit.audit_row_change(
   user_id UUID,
   row_pk jsonb,
   before_data jsonb,
-  after_data jsonb,
-  FOREIGN KEY (user_id) REFERENCES core."user"(id)
+  after_data jsonb
 );
 
 CREATE INDEX idx_audit_row_change_event_time ON audit.audit_row_change (event_time);
@@ -63,12 +62,24 @@ AS $$
 DECLARE 
   v_tenant_id uuid; 
   v_request_id uuid;
+  v_tenant_raw text;
+  v_request_raw text;
 BEGIN
 IF TG_TABLE_SCHEMA = 'audit' THEN
   RETURN NULL;
 END IF;
-v_tenant_id := current_setting('app.context.current_tenant_id', true)::uuid;
-v_request_id := current_setting('app.context.request_id', true)::uuid;
+v_tenant_raw := NULLIF(current_setting('app.context.current_tenant_id', true), '');
+v_request_raw := NULLIF(current_setting('app.context.request_id', true), '');
+v_tenant_id := CASE
+  WHEN v_tenant_raw ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+  THEN v_tenant_raw::uuid
+  ELSE NULL
+END;
+v_request_id := CASE
+  WHEN v_request_raw ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+  THEN v_request_raw::uuid
+  ELSE NULL
+END;
 IF TG_OP = 'INSERT' THEN
 INSERT INTO audit.audit_row_change
 (table_name, request_id, operation, db_role, user_id, row_pk, after_data) 
@@ -90,6 +101,6 @@ RETURN OLD;
 END IF;
 RETURN NULL;
 END; $$
-LANGUAGE: PLPGSQL;
+LANGUAGE PLPGSQL;
 
 

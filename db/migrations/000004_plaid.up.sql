@@ -1,10 +1,23 @@
-CREATE SCHEMA plaid;
+SET ROLE app_owner;
 
-GRANT USAGE ON SCHEMA plaid TO app_owner;
+CREATE SCHEMA IF NOT EXISTS plaid AUTHORIZATION app_owner;
+
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA plaid TO app_owner;
 
 ALTER DEFAULT PRIVILEGES IN SCHEMA plaid
 GRANT ALL PRIVILEGES ON TABLES TO app_owner;
+
+GRANT USAGE ON SCHEMA plaid TO app_runtime;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA plaid TO app_runtime;
+
+GRANT USAGE ON SCHEMA plaid TO app_worker;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA plaid TO app_worker;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA plaid
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO app_runtime;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA plaid
+GRANT ALL PRIVILEGES ON TABLES TO app_worker;
 
 CREATE TABLE IF NOT EXISTS plaid.plaid_institution (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -16,6 +29,8 @@ CREATE TABLE IF NOT EXISTS plaid.plaid_institution (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+REVOKE INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER ON plaid.plaid_institution FROM app_runtime;
+
 CREATE TABLE IF NOT EXISTS plaid.link_event(
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL, 
@@ -23,7 +38,7 @@ CREATE TABLE IF NOT EXISTS plaid.link_event(
   status TEXT NOT NULL,
   error TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  FOREIGN KEY (user_id) REFERENCES core."user"(id) ON DELETE RESTRICT,
+  FOREIGN KEY (user_id) REFERENCES core.user_data(id) ON DELETE RESTRICT,
   FOREIGN KEY (institution_id) REFERENCES plaid.plaid_institution(id) ON DELETE RESTRICT,
   CHECK (status IN ('success', 'errored', 'abandoned'))
 );
@@ -41,7 +56,7 @@ CREATE TABLE IF NOT EXISTS plaid.plaid_item (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   FOREIGN KEY (institution_id) REFERENCES plaid.plaid_institution(id) ON DELETE RESTRICT,
-  FOREIGN KEY (user_id) REFERENCES core."user"(id) ON DELETE RESTRICT,
+  FOREIGN KEY (user_id) REFERENCES core.user_data(id) ON DELETE RESTRICT,
   CHECK (status IN ('active', 'errored', 'relink_required', 'inactive'))
 );
 
