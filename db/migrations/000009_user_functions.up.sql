@@ -10,7 +10,9 @@ UPDATE core.user_data
 SET archived=true
 WHERE id = p_user_id;
 INSERT INTO core.archived_user (user_id, expires_at)
-VALUES (p_user_id, now() + interval '30 days');
+VALUES (p_user_id, now() + interval '30 days')
+ON CONFLICT (user_id)
+DO UPDATE SET expires_at = EXCLUDED.expires_at;
 END; $$
 LANGUAGE PLPGSQL;
 
