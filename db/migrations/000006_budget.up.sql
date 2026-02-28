@@ -115,3 +115,5 @@ CREATE TRIGGER trg_budget_line_user_category_consistency
 BEFORE INSERT OR UPDATE on budget.budget_line
 FOR EACH ROW
 EXECUTE FUNCTION budget.enforce_budget_category_user_match();
+
+RESET ROLE;

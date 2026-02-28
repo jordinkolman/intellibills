@@ -143,3 +143,4 @@ AFTER INSERT OR UPDATE OR DELETE ON plaid.plaid_account
 FOR EACH ROW
 EXECUTE FUNCTION audit.log_row_change();
 
+RESET ROLE;

@@ -155,3 +155,4 @@ AFTER INSERT OR UPDATE OR DELETE ON finance.transaction_income_override
 FOR EACH ROW
 EXECUTE FUNCTION audit.log_row_change();
 
+RESET ROLE;

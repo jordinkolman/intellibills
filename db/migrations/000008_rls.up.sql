@@ -183,3 +183,4 @@ CREATE POLICY tenant_isolation_policy ON timekeeping.shift_transaction
 TO app_runtime
 USING (user_id = core.current_tenant());
 
+RESET ROLE;
