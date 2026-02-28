@@ -51,4 +51,4 @@ FOR EACH ROW
 EXECUTE FUNCTION audit.log_row_change();
 
 
-
+RESET ROLE;

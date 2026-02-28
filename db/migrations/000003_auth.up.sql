@@ -131,3 +131,5 @@ CREATE OR REPLACE TRIGGER audit_password_reset_events
 AFTER INSERT OR UPDATE OR DELETE ON auth.password_reset
 FOR EACH ROW
 EXECUTE FUNCTION audit.log_row_change();
+
+RESET ROLE;

@@ -95,3 +95,5 @@ CREATE TRIGGER trg_shift_transaction_user_match
 BEFORE INSERT OR UPDATE ON timekeeping.shift_transaction
 FOR EACH ROW
 EXECUTE FUNCTION timekeeping.enforce_shift_transaction_user_match();
+
+RESET ROLE;
