@@ -1,5 +1,7 @@
 FROM postgres:16-bookworm
 
 RUN apt-get update && \
-    apt-get install -y postgresql-16-pgaudit && \
+    apt-get install -y \
+    postgresql-16-pgaudit \
+    postgresql-16-pgtap && \
     rm -rf /var/lib/apt/lists/*

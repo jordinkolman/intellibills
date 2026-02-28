@@ -30,11 +30,11 @@ psql -v ON_ERROR_STOP=1 \
   SELECT format('GRANT CONNECT ON DATABASE %I TO app_admin', :'postgres_db') \gexec
   SELECT format('GRANT CONNECT ON DATABASE %I TO app_worker', :'postgres_db') \gexec
   SELECT format('GRANT CONNECT ON DATABASE %I TO auditor', :'postgres_db') \gexec
-EOSQL
 
   CREATE EXTENSION IF NOT EXISTS pgaudit;
   CREATE EXTENSION IF NOT EXISTS pgcrypto;
   CREATE EXTENSION IF NOT EXISTS btree_gist;
+  CREATE EXTENSION IF NOT EXISTS pgtap;
 
 EOSQL
 
