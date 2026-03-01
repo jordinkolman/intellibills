@@ -34,7 +34,7 @@ Testing is divided into database-level unit tests and application-level integrat
 
 1.  **Clone the repository:**
     ```bash
-    git clone [https://github.com/yourusername/intellibills.git](https://github.com/yourusername/intellibills.git)
+    git clone https://github.com/jordinkolman/intellibills.git
     cd intellibills
     ```
 
