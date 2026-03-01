@@ -59,7 +59,7 @@ Testing is divided into database-level unit tests and application-level integrat
 * Develop Go API endpoints for core transaction tracking.
 * Develop Next.js Web App
 * Develop core budgeting tools and transaction syncing with Plaid.
-* Implement AI toolchain for category recommendations, user chat interaction, etc..
+* Implement AI toolchain for category recommendations, user chat interaction, etc.
 * Implement historical earnings analysis algorithm.
 * Build the schedule recommendation engine.
 * Develop mobile application(s) for Android and iOS
