@@ -22,14 +22,14 @@ services:
       retries: 5
   migrate:
     image: migrate/migrate
-    container_name: intellibills_migrate
+    profiles: ["tools"]
     env_file:
       - .env
     volumes:
       - ./db/migrations:/migrations
     command:
       - -path=/migrations
-      - -database=postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-intellibills}?sslmode=disable
+      - -database=postgres://app_admin:${APP_ADMIN_PASSWORD_URLENC}@db:5432/${POSTGRES_DB:-intellibills}?sslmode=disable
       - up
     depends_on:
       db:
