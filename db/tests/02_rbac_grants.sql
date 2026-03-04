@@ -1,5 +1,10 @@
 BEGIN;
-SELECT plan(5);
+SELECT plan(7);
+
+-- Set up valid account type to test subtype insert
+SET ROLE app_admin;
+INSERT INTO finance.account_type (name) VALUES ('depository');
+SELECT set_config('app.test.account_type_id', (SELECT id::text FROM finance.account_type WHERE name='depository'), true);
 
 -- Verify app_runtime cannot write to global tables
 SET ROLE app_runtime;
@@ -8,6 +13,20 @@ SELECT throws_ok(
     '42501', -- insufficient_privilege
     NULL,
     'app_runtime should not be able to insert into auth.hash_algo'
+);
+
+SELECT throws_ok(
+  'INSERT INTO finance.account_type (name) VALUES (''INVALID'')',
+  '42501',
+  NULL,
+  'app_runtime should not be able to insert into finance.account_type'
+);
+
+SELECT throws_ok(
+  'INSERT INTO finance.account_subtype (name, type_id) VALUES (''INVALID'', current_setting(''app.test.account_type_id'', true)::uuid, ...)',
+  '42501',
+  NULL,
+  'app_runtime should not be able to insert into finance.account_subtype'
 );
 
 -- Verify auditor is read-only in audit schema
