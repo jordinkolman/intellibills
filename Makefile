@@ -1,3 +1,6 @@
+include .env
+export
+
 .PHONY: all clean test db-up db-down db-clean
 all: db-up
 
