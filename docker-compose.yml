@@ -29,7 +29,7 @@ services:
       - ./db/migrations:/migrations
     command:
       - -path=/migrations
-      - -database=postgres://app_admin:${APP_ADMIN_PASSWORD}@db:5432/${POSTGRES_DB:-intellibills}?sslmode=disable
+      - -database=postgres://app_admin:${APP_ADMIN_PASSWORD_URLENC}@db:5432/${POSTGRES_DB:-intellibills}?sslmode=disable
       - up
     depends_on:
       db:

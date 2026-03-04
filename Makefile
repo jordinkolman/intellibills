@@ -1,8 +1,12 @@
-.PHONY: db-up db-down db-clean
+.PHONY: all clean test db-up db-down db-clean
+all: db-up
 
+clean: db-clean
+
+test: 
+		@echo "Test suite not yet implemented"
 
 # Starts the database and runs the ephemeral migration container
-
 db-up:
 	docker-compose up -d db
 	docker-compose run --rm migrate
@@ -14,6 +18,4 @@ db-down:
 
 # Nukes the database and the volume (perfect for resetting your test state)
 db-clean:
-
-	docker-compose down -v
-	docker image prune -f
+	docker-compose down -v --rmi local
