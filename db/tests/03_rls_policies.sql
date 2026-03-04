@@ -64,7 +64,7 @@ SELECT is(
 -- Test Insert Restriction: User A cannot insert data for User B
 -- We reset role to get user_b_id safely for the test setup, or use subquery
 SELECT throws_ok(
-    'INSERT INTO auth.user_session (user_id, ...) VALUES (current_setting(''app.test.user_b_id'', true)::uuid, ...)',
+    'INSERT INTO auth.user_session (user_id, refresh_token_hash, hash_algo_id, user_agent, ip_address) VALUES (current_setting(''app.test.user_b_id'', true)::uuid, ''\\x010203'', (SELECT id FROM auth.hash_algo LIMIT 1), ''Mozilla/5.0'', ''127.0.0.1'')',
     '42501', 
     NULL,
     'User A should not be able to insert a session for User B'

@@ -28,9 +28,6 @@ SELECT throws_ok(
   NULL,
   'app_runtime should not be able to insert into finance.account_subtype'
 );
-  NULL,
-  'app_runtime should not be able to insert into finance.account_subtype'
-);
 
 -- Verify auditor is read-only in audit schema
 SET ROLE auditor;
