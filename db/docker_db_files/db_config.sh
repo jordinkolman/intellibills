@@ -23,6 +23,11 @@ psql -v ON_ERROR_STOP=1 \
   SELECT format('CREATE ROLE app_admin LOGIN PASSWORD %L BYPASSRLS IN ROLE app_owner', :'app_admin_password') \gexec
   SELECT format('CREATE ROLE auditor LOGIN PASSWORD %L', :'auditor_password') \gexec
 
+  -- Grant app_admin the ability to switch to other roles for testing/management
+  GRANT app_runtime TO app_admin;
+  GRANT auditor TO app_admin;
+  GRANT app_worker TO app_admin;
+
   -- Set Permissions
   SELECT format('ALTER DATABASE %I OWNER TO app_owner', :'postgres_db') \gexec
 

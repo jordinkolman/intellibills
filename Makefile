@@ -3,8 +3,9 @@ all: db-up
 
 clean: db-clean
 
-test: 
-		@echo "Test suite not yet implemented"
+test: db-up
+	@echo "Running pgTAP tests..."
+	docker-compose exec -T -e PGPASSWORD=${APP_ADMIN_PASSWORD} db sh -c 'pg_prove -U app_admin -d ${POSTGRES_DB} /tests/*.sql'
 
 # Starts the database and runs the ephemeral migration container
 db-up:
