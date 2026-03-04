@@ -1,4 +1,4 @@
-#Intellibills: Project Specification & Architecture Context
+# Intellibills: Project Specification & Architecture Context
 
 This document serves as the technical source of truth for the Intellibills project. It outlines the database architecture, security paradigms, application contracts, and testing infrastructure.
 
