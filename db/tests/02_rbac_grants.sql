@@ -23,8 +23,11 @@ SELECT throws_ok(
 );
 
 SELECT throws_ok(
-  'INSERT INTO finance.account_subtype (name, type_id) VALUES (''INVALID'', current_setting(''app.test.account_type_id'', true)::uuid, ...)',
+  'INSERT INTO finance.account_subtype (name, type_id) VALUES (''INVALID'', current_setting(''app.test.account_type_id'', true)::uuid)',
   '42501',
+  NULL,
+  'app_runtime should not be able to insert into finance.account_subtype'
+);
   NULL,
   'app_runtime should not be able to insert into finance.account_subtype'
 );
