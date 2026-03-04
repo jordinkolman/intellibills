@@ -9,7 +9,7 @@ test: db-up
 
 # Starts the database and runs the ephemeral migration container
 db-up:
-	docker-compose up -d db
+	docker-compose up -d --wait db
 	docker-compose run --rm migrate
 
 

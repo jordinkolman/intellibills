@@ -30,6 +30,7 @@ SELECT id, 'acc_a', 'Account A', '1234', 'Official A', 'depository', 'checking',
 
 -- Capture User A ID before switching role to app_runtime (which would be restricted by RLS)
 SELECT set_config('app.context.current_tenant_id', (SELECT id::text FROM core.user_data WHERE email = 'user_a@example.com'), true);
+SELECT set_config('app.test.user_b_id', (SELECT id::text FROM core.user_data WHERE email = 'user_b@example.com'), true);
 
 -- Test User A isolation
 SET ROLE app_runtime;
@@ -63,7 +64,7 @@ SELECT is(
 -- Test Insert Restriction: User A cannot insert data for User B
 -- We reset role to get user_b_id safely for the test setup, or use subquery
 SELECT throws_ok(
-    'INSERT INTO auth.user_session (user_id, refresh_token_hash, hash_algo_id, user_agent, ip_address) VALUES ((SELECT id FROM core.user_data WHERE email = ''user_b@example.com'' OFFSET 0), ''hash'', (SELECT id FROM auth.hash_algo LIMIT 1), ''UA'', ''127.0.0.1'')',
+    'INSERT INTO auth.user_session (user_id, ...) VALUES (current_setting(''app.test.user_b_id'', true)::uuid, ...)',
     '42501', 
     NULL,
     'User A should not be able to insert a session for User B'
