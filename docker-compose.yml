@@ -14,6 +14,8 @@ services:
       - pg_data:/var/lib/postgresql/data
       # Bind mounts for initialization scripts
       - ./db/docker_db_files/db_config.sh:/docker-entrypoint-initdb.d/db_config.sh:ro
+      # Bind mount for pgTAP tests
+      - ./db/tests:/tests:ro
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-intellibills}"]

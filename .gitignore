@@ -16,3 +16,5 @@ wheels/
 .env
 .env.*
 !.env.example
+.gemini/
+mcp-config.json
