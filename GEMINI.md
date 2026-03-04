@@ -15,7 +15,7 @@ The database operates on a strict least-privilege model using five specific role
 * **`app_worker`**: The identity used by background services (e.g., Plaid webhook processing). It possesses the `BYPASSRLS` attribute to update records globally without requiring a tenant context.
 * **`auditor`**: A strictly read-only role confined exclusively to the `audit` schema. It does not possess `BYPASSRLS` and cannot query live application tables.
 
-## 3. Row Level Security (RLS)
+## 3. Row-Level Security (RLS)
 Tenant isolation is enforced dynamically at the database engine level.
 * **Symmetrical Policies:** Read and write policies are identical. We utilize the `USING` clause exclusively, relying on PostgreSQL to automatically enforce it as the `WITH CHECK` constraint for mutations.
 * **Context Extraction:** RLS policies rely on a centralized stable function: `core.current_tenant()`. This function extracts the tenant ID safely: `NULLIF(current_setting('app.context.current_tenant_id', true), '')::UUID`.
