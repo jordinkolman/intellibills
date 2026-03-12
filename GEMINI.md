@@ -10,7 +10,7 @@ This document serves as the technical source of truth for the Intellibills proje
 ## 2. Role-Based Access Control (RBAC)
 The database operates on a strict least-privilege model using five specific roles:
 * **`app_owner`**: The non-login role that owns all schemas, tables, functions, and triggers. 
-* **`app_admin`**: Used exclusively by `golang-migrate` to execute schema changes. Migration files must begin with `SET ROLE app_owner;` to ensure newly created objects are assigned to the correct owner.
+* **`app_admin`**: Used exclusively by Flyway (or other Java migration tools) via Spring Boot to execute schema changes. Migration files must begin with `SET ROLE app_owner;` to ensure newly created objects are assigned to the correct owner when Flyway runs them.
 * **`app_runtime`**: The identity used by the Java API for standard user requests. It is restricted by Row Level Security (RLS) and relies on transaction-scoped session variables to access data. Write access to global lookup tables is explicitly revoked.
 * **`app_worker`**: The identity used by background services (e.g., Plaid webhook processing). It possesses the `BYPASSRLS` attribute to update records globally without requiring a tenant context.
 * **`auditor`**: A strictly read-only role confined exclusively to the `audit` schema. It does not possess `BYPASSRLS` and cannot query live application tables.
@@ -32,18 +32,21 @@ To prevent connection pooling leaks and correctly trigger RLS and audit logs, ev
 
 Before executing any business logic query, the repository must inject the context:
 ```java
-try (PreparedStatement stmt = connection.prepareStatement("SET LOCAL app.context.current_tenant_id = ?; SET LOCAL app.context.request_id = ?")) {
-    stmt.setObject(1, tenantId);
-    stmt.setObject(2, requestId);
-    stmt.execute();
+try (PreparedStatement stmt1 = connection.prepareStatement("SET LOCAL app.context.current_tenant_id = ?");
+     PreparedStatement stmt2 = connection.prepareStatement("SET LOCAL app.context.request_id = ?")) {
+    stmt1.setObject(1, tenantId);
+    stmt1.execute();
+    
+    stmt2.setObject(1, requestId);
+    stmt2.execute();
 }
 ```
 ## 6. Docker & Tooling Infrastructure
-Migrations: Executed via the migrate/migrate Docker image running against a specific Compose profile (tools).
+Migrations: Executed natively via Flyway integrated within the Java application lifecycle. The Spring Boot application inherently handles migrating on startup.
 
-Makefile Integration: Standard commands manage the environment and prevent orphaned containers.
+Makefile Integration: Standard commands manage the local environment footprint and testing boundaries.
 
-make db-up: Starts the database in the background and runs the migration container with the --rm flag for instant cleanup.
+make db-up: Starts the database in the background and waits for it to become healthy. It no longer implicitly runs migrations.
 
 make db-clean: Tears down the database, deletes the persistent volume, and prunes images for a clean test state.
 
@@ -57,7 +60,7 @@ Application-Layer Integration: Java tests utilize the Transaction Rollback Patte
 ## 8. Data Seeding Strategy
 Data seeding is explicitly decoupled from schema structure to prevent mock data leakage.
 
-Production Seed (Static): Handled by golang-migrate (e.g., 000010_seed_static.up.sql). Contains immutable system taxonomy required for the application to function.
+Production Seed (Static): Handled via versioned migrations in Flyway (e.g., `V10__seed_static.sql`). Contains immutable system taxonomy required for the application to function.
 
 Development Seed (Mock): A standalone SQL script (db/scripts/seed_dev.sql) executed manually or via make to populate the local environment with mock users and transactions.
 
