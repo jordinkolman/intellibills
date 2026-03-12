@@ -22,19 +22,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-  migrate:
-    image: migrate/migrate
-    profiles: ["tools"]
-    env_file:
-      - .env
-    volumes:
-      - ./db/migrations:/migrations
-    command:
-      - -path=/migrations
-      - -database=postgres://app_admin:${APP_ADMIN_PASSWORD_URLENC}@db:5432/${POSTGRES_DB:-intellibills}?sslmode=disable
-      - up
-    depends_on:
-      db:
-        condition: service_healthy
+
 volumes:
   pg_data:

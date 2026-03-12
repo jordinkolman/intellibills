@@ -10,10 +10,9 @@ test: db-up
 	@echo "Running pgTAP tests..."
 	docker-compose exec -T -e PGPASSWORD=${APP_ADMIN_PASSWORD} db sh -c 'pg_prove -U app_admin -d ${POSTGRES_DB} /tests/*.sql'
 
-# Starts the database and runs the ephemeral migration container
+# Starts the database and waits for it to become healthy
 db-up:
 	docker-compose up -d --wait db
-	docker-compose run --rm migrate
 
 
 # Stops the database safely
