@@ -6,14 +6,18 @@ all: db-up
 
 clean: db-clean
 
-test: db-up
+test: restore-schemas
 	@echo "Running pgTAP tests..."
 	docker-compose exec -T -e PGPASSWORD=${APP_ADMIN_PASSWORD} db sh -c 'pg_prove -U app_admin -d ${POSTGRES_DB} /tests/*.sql'
 
-# Starts the database and runs the ephemeral migration container
+# Manually execute the Flyway-formatted migration scripts so pgTAP tests have a schema to run against
+restore-schemas: db-up
+	@echo "Restoring database schemas from Flyway scripts..."
+	docker-compose exec -T -e PGPASSWORD=${APP_ADMIN_PASSWORD} db sh -c 'for f in /migrations/V*__*.sql; do psql -U app_admin -d ${POSTGRES_DB} -f "$$f"; done'
+
+# Starts the database and waits for it to become healthy
 db-up:
 	docker-compose up -d --wait db
-	docker-compose run --rm migrate
 
 
 # Stops the database safely

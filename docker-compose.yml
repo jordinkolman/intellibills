@@ -14,6 +14,8 @@ services:
       - pg_data:/var/lib/postgresql/data
       # Bind mounts for initialization scripts
       - ./db/docker_db_files/db_config.sh:/docker-entrypoint-initdb.d/db_config.sh:ro
+      # Bind mount for Flyway migration scripts (used manually by Makefile tests)
+      - ./db/migrations:/migrations:ro
       # Bind mount for pgTAP tests
       - ./db/tests:/tests:ro
     restart: unless-stopped
@@ -22,19 +24,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-  migrate:
-    image: migrate/migrate
-    profiles: ["tools"]
-    env_file:
-      - .env
-    volumes:
-      - ./db/migrations:/migrations
-    command:
-      - -path=/migrations
-      - -database=postgres://app_admin:${APP_ADMIN_PASSWORD_URLENC}@db:5432/${POSTGRES_DB:-intellibills}?sslmode=disable
-      - up
-    depends_on:
-      db:
-        condition: service_healthy
+
 volumes:
   pg_data:
