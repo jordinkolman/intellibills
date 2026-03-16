@@ -80,7 +80,7 @@ SELECT has_trigger('plaid', 'plaid_account', 'audit_plaid_accounts', 'plaid.plai
 SELECT has_trigger('finance', 'account', 'audit_account_changes', 'finance.account should have audit trigger');
 SELECT has_trigger('finance', 'transaction', 'audit_transactions', 'finance.transaction should have audit trigger');
 SELECT has_trigger('finance', 'income_stream', 'audit_income_streams', 'finance.income_stream should have audit trigger');
-SELECT has_trigger('finance', 'transaction_income_override', 'audit_transaction_income_overrrides', 'finance.transaction_income_override should have audit trigger');
+SELECT has_trigger('finance', 'transaction_income_override', 'audit_transaction_income_overrides', 'finance.transaction_income_override should have audit trigger');
 SELECT has_trigger('timekeeping', 'shift', 'audit_shifts', 'timekeeping.shift should have audit trigger');
 SELECT has_trigger('timekeeping', 'shift_transaction', 'audit_shift_transactions', 'timekeeping.shift_transaction should have audit trigger');
 

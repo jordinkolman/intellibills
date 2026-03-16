@@ -53,7 +53,10 @@ SELECT schema_privs_are('budget', 'app_runtime', ARRAY['USAGE'], 'app_runtime sh
 SELECT schema_privs_are('timekeeping', 'app_runtime', ARRAY['USAGE'], 'app_runtime should have usage on timekeeping schema');
 
 -- Verify execution privileges
-SELECT has_function_privilege('app_runtime', 'core.current_tenant()', 'EXECUTE', 'app_runtime should have EXECUTE privilege on core.current_tenant()');
+SELECT ok(
+    has_function_privilege('app_runtime', 'core.current_tenant()', 'EXECUTE'),
+    'app_runtime should have EXECUTE privilege on core.current_tenant()'
+);
 
 -- Verify positive privileges for app_runtime on tenant-owned tables
 SELECT table_privs_are('finance', 'account', 'app_runtime', ARRAY['SELECT', 'INSERT', 'UPDATE', 'DELETE'], 'app_runtime should have DML privileges on finance.account');

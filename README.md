@@ -54,10 +54,7 @@ Testing is divided into database-level unit tests and application-level integrat
     ```
 
 4.  **Run the Java API:**
-    ```bash
-    # Example using Maven wrapper:
-    ./mvnw spring-boot:run
-    ```
+    *Note: The Java Spring Boot API and Maven setup is planned for a future iteration and is not currently available to run.*
 
 ## Roadmap
 * Finalize MVP database schema and RLS policies.
