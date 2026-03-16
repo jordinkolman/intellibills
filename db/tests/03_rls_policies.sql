@@ -1,5 +1,5 @@
 BEGIN;
-SELECT plan(5);
+SELECT plan(10);
 
 -- Ensure we have a hash algo for the session test
 INSERT INTO auth.hash_algo (name) VALUES ('argon2id') ON CONFLICT DO NOTHING;
@@ -7,7 +7,7 @@ INSERT INTO auth.hash_algo (name) VALUES ('argon2id') ON CONFLICT DO NOTHING;
 -- Setup Test Data using CTEs for relational integrity
 WITH test_users AS (
     INSERT INTO core.user_data (id, email)
-    VALUES 
+    VALUES
         (gen_random_uuid(), 'user_a@example.com'),
         (gen_random_uuid(), 'user_b@example.com')
     RETURNING id, email
@@ -21,9 +21,16 @@ mock_inst AS (
 ),
 user_a_item AS (
     INSERT INTO plaid.plaid_item (user_id, plaid_id, access_token, institution_id, status)
-    SELECT user_a.id, 'item_a', 'token_a', mock_inst.id, 'active' 
+    SELECT user_a.id, 'item_a', 'token_a', mock_inst.id, 'active'
     FROM user_a, mock_inst
     RETURNING id
+),
+user_categories AS (
+    INSERT INTO budget.user_category (user_id, name, description)
+    SELECT user_a.id, 'Category A', 'Desc A' FROM user_a
+    UNION ALL
+    SELECT user_b.id, 'Category B', 'Desc B' FROM user_b
+    RETURNING id, user_id
 )
 INSERT INTO plaid.plaid_account (plaid_item_id, plaid_account_id, name, mask, official_name, type, subtype, currency)
 SELECT id, 'acc_a', 'Account A', '1234', 'Official A', 'depository', 'checking', 'USD' FROM user_a_item;
@@ -62,12 +69,48 @@ SELECT is(
 );
 
 -- Test Insert Restriction: User A cannot insert data for User B
--- We reset role to get user_b_id safely for the test setup, or use subquery
 SELECT throws_ok(
-    'INSERT INTO auth.user_session (user_id, refresh_token_hash, hash_algo_id, user_agent, ip_address) VALUES (current_setting(''app.test.user_b_id'', true)::uuid, ''\\x010203'', (SELECT id FROM auth.hash_algo LIMIT 1), ''Mozilla/5.0'', ''127.0.0.1'')',
-    '42501', 
+    'INSERT INTO auth.user_session (user_id, refresh_token_hash, hash_algo_id, user_agent, ip_address) VALUES (current_setting(''app.test.user_b_id'', true)::uuid, ''\x010203'', (SELECT id FROM auth.hash_algo LIMIT 1), ''Mozilla/5.0'', ''127.0.0.1'')',
+    '44000',
     NULL,
     'User A should not be able to insert a session for User B'
+);
+
+-- Test UPDATE Restriction (WITH CHECK)
+SELECT throws_ok(
+    'UPDATE budget.user_category SET user_id = current_setting(''app.test.user_b_id'', true)::uuid WHERE name = ''Category A''',
+    '44000',
+    NULL,
+    'User A should not be able to reassign their category to User B'
+);
+
+-- Test DELETE Restriction
+SELECT is(
+    (WITH deleted AS (DELETE FROM core.user_data WHERE email = 'user_b@example.com' RETURNING id) SELECT COUNT(*)::integer FROM deleted),
+    0,
+    'User A deleting User B should silently affect 0 rows due to RLS isolation'
+);
+
+-- Cross-Schema RLS
+SELECT is(
+    (SELECT COUNT(*)::integer FROM budget.user_category),
+    1,
+    'User A should only see their own category in budget.user_category'
+);
+
+-- BYPASSRLS Verification
+RESET ROLE;
+SET ROLE app_worker;
+SELECT is(
+    (SELECT COUNT(*)::integer FROM core.user_data WHERE email IN ('user_a@example.com', 'user_b@example.com')),
+    2,
+    'app_worker should be able to see both User A and User B records via BYPASSRLS'
+);
+
+SELECT is(
+    (SELECT COUNT(*)::integer FROM budget.user_category),
+    2,
+    'app_worker should be able to see all user categories via BYPASSRLS'
 );
 
 SELECT * FROM finish();
