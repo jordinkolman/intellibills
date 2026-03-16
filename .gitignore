@@ -18,3 +18,20 @@ wheels/
 !.env.example
 .gemini/
 mcp-config.json
+
+# Java / Build Tools
+target/
+!.mvn/wrapper/maven-wrapper.jar
+.gradle/
+!gradle/wrapper/gradle-wrapper.jar
+
+# IDEs
+.idea/
+*.iws
+*.iml
+*.ipr
+.vscode/
+
+# Internal Design Documents
+/artifacts
+/artifacts/*

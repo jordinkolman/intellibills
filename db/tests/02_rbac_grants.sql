@@ -1,5 +1,5 @@
 BEGIN;
-SELECT plan(7);
+SELECT plan(16);
 
 -- Set up valid account type to test subtype insert
 SET ROLE app_admin;
@@ -44,7 +44,28 @@ SELECT has_role('app_worker', 'app_worker role should exist');
 SELECT ok(rolbypassrls, 'app_worker should have BYPASSRLS attribute') 
 FROM pg_roles WHERE rolname = 'app_worker';
 
+-- Verify schema USAGE privileges for app_runtime
 SELECT schema_privs_are('auth', 'app_runtime', ARRAY['USAGE'], 'app_runtime should have usage on auth schema');
+SELECT schema_privs_are('core', 'app_runtime', ARRAY['USAGE'], 'app_runtime should have usage on core schema');
+SELECT schema_privs_are('plaid', 'app_runtime', ARRAY['USAGE'], 'app_runtime should have usage on plaid schema');
+SELECT schema_privs_are('finance', 'app_runtime', ARRAY['USAGE'], 'app_runtime should have usage on finance schema');
+SELECT schema_privs_are('budget', 'app_runtime', ARRAY['USAGE'], 'app_runtime should have usage on budget schema');
+SELECT schema_privs_are('timekeeping', 'app_runtime', ARRAY['USAGE'], 'app_runtime should have usage on timekeeping schema');
+
+-- Verify execution privileges
+SELECT ok(
+    has_function_privilege('app_runtime', 'core.current_tenant()', 'EXECUTE'),
+    'app_runtime should have EXECUTE privilege on core.current_tenant()'
+);
+
+-- Verify positive privileges for app_runtime on tenant-owned tables
+SELECT table_privs_are('finance', 'account', 'app_runtime', ARRAY['SELECT', 'INSERT', 'UPDATE', 'DELETE'], 'app_runtime should have DML privileges on finance.account');
+SELECT table_privs_are('budget', 'user_category', 'app_runtime', ARRAY['SELECT', 'INSERT', 'UPDATE', 'DELETE'], 'app_runtime should have DML privileges on budget.user_category');
+
+-- Verify default privileges for newly created tables
+SET ROLE app_owner;
+CREATE TABLE finance.dummy_test_table (id int);
+SELECT table_privs_are('finance', 'dummy_test_table', 'app_runtime', ARRAY['SELECT', 'INSERT', 'UPDATE', 'DELETE'], 'app_runtime should automatically have DML privileges on newly created tables in finance schema');
 
 SELECT * FROM finish();
 ROLLBACK;

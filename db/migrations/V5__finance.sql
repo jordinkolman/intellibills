@@ -150,7 +150,7 @@ CREATE TABLE IF NOT EXISTS finance.transaction_income_override (
   FOREIGN KEY (income_category_id) REFERENCES finance.income_category(id) ON DELETE RESTRICT
 );
 
-CREATE OR REPLACE TRIGGER audit_transaction_income_overrrides
+CREATE OR REPLACE TRIGGER audit_transaction_income_overrides
 AFTER INSERT OR UPDATE OR DELETE ON finance.transaction_income_override
 FOR EACH ROW
 EXECUTE FUNCTION audit.log_row_change();
